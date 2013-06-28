@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load musictags %}
+{% block meta_title %}Chordgenerator{% endblock %}
+{% block main %}
+<h1>Chord Generator</h1>
+<form id="fontchoice" action="." method="get" class="inline">    
+<fieldset>
+<legend>Choose a scale to find the chords it contains.</legend>
+<div class = "row-fluid">
+<div class = "span1"><label for="key">Key</label></div>
+<div class = "span1">
+<select id="key" name="key">
+{% for key in keys %}
+    <option {% ifequal key chosenkey %}selected="selected"{% endifequal %} value="{{ key }}">{{ key }}</option>
+{% endfor %}
+</select>
+</div>
+<div class = "span1"><label for="scale">Scale</label></div>
+<div class = "span4">
+<select id="scale" name="scales" >
+{% for scale in scales %}
+    <option {% ifequal scale chosenscale %}selected="selected"{% endifequal %} value="{{ scale }}">{{ scale }}</option>
+{% endfor %}
+</select>
+</div>
+<div class = "span2"><label for="asciif">ASCII friendly</label></div>
+<div class="span1">
+
+<input type="checkbox" 
+ name="asciif" value="asciif" id="asciif" {% if asciiselect %}checked="checked"{% endif %}/>
+</div>             
+<div class="span1">
+<input type="submit" value="Submit" class="button"/>
+</div>
+</div>
+</fieldset>
+</form>
+<h1>Results</h1>
+{% if asciiselect %}
+{{ scaletable|chordtabletag:1 }}
+{% else %}
+{{ scaletable|chordtabletag:0 }}
+{% endif %}
+    <h1 id="doc">Documentation</h1>
+    <h2>What is Chordgenerator?</h2>
+    <p><strong>Chordgenerator</strong> is a application for enumerating all
+    possible chords in a selected scale. In particular, <strong>Chordgenerator</strong>
+    will show what the chord is for a given <em>chord type</em> and <em>position</em>, if
+    such a chord exists.</p>
+    <h2>Usage</h2>
+    <p>There are three controls in <strong>Chordgenerator</strong>.</p>
+    <ul><li><strong>Key</strong>: This sets the root note for the scale. Select from C, C♯, D♭ and all up to B.</li>
+    <li><strong>Scale</strong>: This sets the scale under study. There are plenty to choose from, such as
+    Major, Dorian (a mode of the Major), and Harmonic Minor.</li>
+    <li><strong>ASCII friendly</strong>: By default, the app prints out the Unicode character
+    "♭" for the flat symbol and "♯" for the sharp symbol. If these are displayed as blocks, it
+    probably it means you are using an browser like IE6. Click "ASCII friendly" to see ASCII
+    equivalents like "b" and "#".</li></ul>
+    <h2>Results</h2>
+    <p><strong>Chordgenerator</strong> generates a table organised as follows:</p>
+    <ul><li>The left hand column shows different <em>chord types</em>. <em>Triads</em> are three note chords,
+    where the 1st, 3rd and 5th notes are chosen from a scale starting from a position in that scale. 
+    <em>Sevenths</em> are when the 1st, 3rd, 5th and 7th notes are chosen from a scale starting from
+    a position in that scale.</li>
+    <li>The top row indicates the starting position of the chord in the scale. The first position in a C major scale
+    is "C", the second position is a "D", and so on. Roman numerals are used to indicate position.</li>
+    <li>The intersection of a column and a row show the name of chord for that position and that
+    chord type. It also shows the abbreviation and the notes that make it up.</li></ul>
+    <p>Let's take the C major scale as an example.</p>
+    <ol><li>The first triad is C, E, G - a major chord, or "maj" for short.</li>
+    <li>The second and third chords are D, F, A and E, G, B - D minor and E minor chords.</li>
+    <li>The fourth and fifth triads are F, A, C and G, B, D - F major and G major chords.</li>
+    <li>The sixth is A, C, E - A minor. The seventh - B, D, F is what I call "Diminished Fifth".
+    This should not be confused with "Diminished Seventh", which is a different chord.</li></ol>
+    <p>The default table (shown above) always shows the chords for the C major scale, with ASCII
+    Friendly mode turned off.</p>
+    <h2>Questions</h2>
+    <p>You may have none, some or many. Some of those questions may be of the form "What the hell is a 
+    "Minor Added 6th Added 9th?" For this particular chord, the answer is "It's the chord with the
+    1st, 2nd, 3rd, 5th and 6th notes of a major scale." For other chords, I'd advise using a search
+    engine. I made this application because I wanted to; any educational usage is just a bonus.</p>
+    <p>I'd like to extend this app to show what notes are in an chord - such as "Minor", without the
+    need to provide a key. It would be nice to add functionality that shows how the chord may
+    appear on a fretboard, whether it be a guitar, a violin, or a 4/5/6 string bass. But perhaps I will
+    never have time to do anything about it.</p>
+    
+    <h2>Installation and Dependencies</h2>
+
+
+    <p>You can get <strong>Chordgenerator</strong> from PyPI through the command:</p>
+
+<pre>pip install chordgenerator</pre>
+
+<p>Once installed, just add "chordgenerator" to your INSTALLED_APPS list in settings.py, and add the
+desired URL in one of the urls.py files.</p> 
+
+<p>Apart from <a href="https://www.djangoproject.com/">Django</a>, the app depends on 
+<a href="https://pypi.python.org/pypi/musictheory/">musictheory</a>. This package - also
+made by myself - is the guts of the application, and can be used outside of Django. It contains classes for musical
+    temperaments, scales and chords.</p> 
+
+<p>The HTML template file used to generate HTML has been
+redesigned to work with the <a href="http://mezzanine.jupo.org/">Mezzanine</a> CMS. The 
+redesign removed any explicit references to particular stylesheets found with earlier versions.
+Feel free to customise: the app is released under a 3 clause BSD license.</p>
+<p style="text-align: center;"><em>Copyright © <a href="/">Peter Murphy</a>
+2011, 2012, 2013.</em></p>
+    
+
+{% endblock %}
