@@ -30,7 +30,7 @@ The HTML template file used to generate HTML has been redesigned to work with th
 references to particular stylesheets found with earlier versions. Feel free to 
 customise: the app is released under a 3 clause BSD license. If you wish to do any 
 changes to the app, pop over to the `GitHub repository <https://github.com/peterkmurphy/chordgenerator>`_. 
-(There is also a `Github repository for musictheory <https://github.com/peterkmurphy/musictheory>`.)</p>
+(There is also a `Github repository for musictheory <https://github.com/peterkmurphy/musictheory>`_.)</p>
 
 Versions
 --------
