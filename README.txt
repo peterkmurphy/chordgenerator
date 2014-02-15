@@ -8,7 +8,7 @@ About
 **Chord Generator** is a Django application for enumerating all possible chords
 in a selected scale. In particular, **Chord Generator** will show what the chord
 is for a given *chord type* and *position*, if such a chord exists. A demonstration
-is available `here <http://www.pkmurphy.com.au/chordgenerator/>`.
+is available `here <http://www.pkmurphy.com.au/chordgenerator/>`_.
 
 Installation and Dependencies
 -----------------------------
@@ -30,7 +30,7 @@ The HTML template file used to generate HTML has been redesigned to work with th
 references to particular stylesheets found with earlier versions. Feel free to 
 customise: the app is released under a 3 clause BSD license. If you wish to do any 
 changes to the app, pop over to the `GitHub repository <https://github.com/peterkmurphy/chordgenerator>`_. 
-(There is also a `Github repository for musictheory <https://github.com/peterkmurphy/musictheory>`.)</p>
+(There is also a `Github repository for musictheory <https://github.com/peterkmurphy/musictheory>`_.)</p>
 
 Versions
 --------
