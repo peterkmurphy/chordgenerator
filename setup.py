@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='chordgenerator',
-    version='0.4',
+    version='0.6',
     description='A Django app for enumerating chords in a scale.',
     author='Peter Murphy',
     author_email='peterkmurphy@gmail.com',

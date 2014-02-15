@@ -1,38 +1,30 @@
 {% extends "base.html" %}
 {% load musictags %}
-{% block meta_title %}Chordgenerator{% endblock %}
+{% block meta_title %}Chord Generator{% endblock %}
+{% block title %}Chord Generator{% endblock %}
 {% block main %}
-<h1>Chord Generator</h1>
 <form id="fontchoice" action="." method="get" class="inline">    
 <fieldset>
 <legend>Choose a scale to find the chords it contains.</legend>
-<div class = "row-fluid">
-<div class = "span1"><label for="key">Key</label></div>
-<div class = "span1">
+<label for="key">Key</label>
+
 <select id="key" name="key">
 {% for key in keys %}
     <option {% ifequal key chosenkey %}selected="selected"{% endifequal %} value="{{ key }}">{{ key }}</option>
 {% endfor %}
 </select>
-</div>
-<div class = "span1"><label for="scale">Scale</label></div>
-<div class = "span4">
+
+<label for="scale">Scale</label>
+
 <select id="scale" name="scales" >
 {% for scale in scales %}
     <option {% ifequal scale chosenscale %}selected="selected"{% endifequal %} value="{{ scale }}">{{ scale }}</option>
 {% endfor %}
 </select>
-</div>
-<div class = "span2"><label for="asciif">ASCII friendly</label></div>
-<div class="span1">
-
+<label for="asciif">ASCII friendly</label>
 <input type="checkbox" 
  name="asciif" value="asciif" id="asciif" {% if asciiselect %}checked="checked"{% endif %}/>
-</div>             
-<div class="span1">
 <input type="submit" value="Submit" class="button"/>
-</div>
-</div>
 </fieldset>
 </form>
 <h1>Results</h1>
@@ -42,13 +34,13 @@
 {{ scaletable|chordtabletag:0 }}
 {% endif %}
     <h1 id="doc">Documentation</h1>
-    <h2>What is Chordgenerator?</h2>
-    <p><strong>Chordgenerator</strong> is a application for enumerating all
-    possible chords in a selected scale. In particular, <strong>Chordgenerator</strong>
+    <h2>What is Chord Generator?</h2>
+    <p><strong>Chord Generator</strong> is a application for enumerating all
+    possible chords in a selected scale. In particular, <strong>Chord Generator</strong>
     will show what the chord is for a given <em>chord type</em> and <em>position</em>, if
     such a chord exists.</p>
     <h2>Usage</h2>
-    <p>There are three controls in <strong>Chordgenerator</strong>.</p>
+    <p>There are three controls in <strong>Chord Generator</strong>.</p>
     <ul><li><strong>Key</strong>: This sets the root note for the scale. Select from C, C♯, D♭ and all up to B.</li>
     <li><strong>Scale</strong>: This sets the scale under study. There are plenty to choose from, such as
     Major, Dorian (a mode of the Major), and Harmonic Minor.</li>
@@ -57,7 +49,7 @@
     probably it means you are using an browser like IE6. Click "ASCII friendly" to see ASCII
     equivalents like "b" and "#".</li></ul>
     <h2>Results</h2>
-    <p><strong>Chordgenerator</strong> generates a table organised as follows:</p>
+    <p><strong>Chord Generator</strong> generates a table organised as follows:</p>
     <ul><li>The left hand column shows different <em>chord types</em>. <em>Triads</em> are three note chords,
     where the 1st, 3rd and 5th notes are chosen from a scale starting from a position in that scale. 
     <em>Sevenths</em> are when the 1st, 3rd, 5th and 7th notes are chosen from a scale starting from
@@ -87,7 +79,7 @@
     <h2>Installation and Dependencies</h2>
 
 
-    <p>You can get <strong>Chordgenerator</strong> from PyPI through the command:</p>
+    <p>You can get <strong>Chord Generator</strong> from PyPI through the command:</p>
 
 <pre>pip install chordgenerator</pre>
 
@@ -102,9 +94,20 @@ made by myself - is the guts of the application, and can be used outside of Djan
 <p>The HTML template file used to generate HTML has been
 redesigned to work with the <a href="http://mezzanine.jupo.org/">Mezzanine</a> CMS. The 
 redesign removed any explicit references to particular stylesheets found with earlier versions.
-Feel free to customise: the app is released under a 3 clause BSD license.</p>
+Feel free to customise: the app is released under a 3 clause BSD license. If you wish to do any changes to the app,
+pop over to the <a href="https://github.com/peterkmurphy/chordgenerator">GitHub repository</a>. (There is
+also a <a href="https://github.com/peterkmurphy/musictheory">Github repository for musictheory</a>.)</p>
+<h2>History</h2>
+<ul>
+<li>0.1 (May 1st 2011) - Initial release. Took code and made setup script.</li>
+<li>0.2 (May 11th 2011) - Remove bugs.</li>
+<li>0.3 (June 6th 2011) - Add license information. Add more scales.</li>
+<li>0.4 (June 2nd 2013) - Try to make a half-decent PyPI package.</li>
+<li>0.5 (January 30th 2014) - Updated to be compatible with Django 1.6 and Mezzanine 3.0.</li>
+<li>0.6 (February 15th 2014) - Added more styling to be compatible with Bootstrap. More history described.</li>
+</ul>
 <p style="text-align: center;"><em>Copyright © <a href="/">Peter Murphy</a>
-2011, 2012, 2013.</em></p>
+2011, 2012, 2013, 2014.</em></p>
     
 
 {% endblock %}

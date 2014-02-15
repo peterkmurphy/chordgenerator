@@ -2,3 +2,5 @@ v0.1, 01/05/2011 -- Initial release. Took code and made setup script.
 v0.2, 11/05/2011 -- Remove bugs.
 v0.3, 06/06/2011 -- Add license information. Add more scales.
 v0.4, 02/06/2013 -- Try to make a half-decent PyPI package.
+v0.5, 30/01/2014 -- Updated to be compatible with Django 1.6 and Mezzanine 3.0.
+v0.6  15/02/2014 -- Added more styling to be compatible with Bootstrap. More history described.
