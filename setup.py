@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='chordgenerator',
-    version='0.6',
+    version='0.6.1',
     description='A Django app for enumerating chords in a scale.',
     author='Peter Murphy',
     author_email='peterkmurphy@gmail.com',
@@ -35,6 +35,6 @@ setup(name='chordgenerator',
         'Topic :: Education',
         'Topic :: Multimedia :: Sound/Audio',
         ],
-    long_description=open('README.txt').read(),
+    long_description=open('README.rst').read(),
     install_requires = ["Django >= 1.1.1", "musictheory >= 0.2"],
 )
