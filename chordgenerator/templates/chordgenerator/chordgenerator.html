@@ -3,6 +3,161 @@
 {% block meta_title %}Chord Generator{% endblock %}
 {% block title %}Chord Generator{% endblock %}
 {% block main %}
+<script>
+
+function rand(min, max) {
+    return min + Math.random() * (max - min);
+}
+
+function get_random_color() {
+    var h = rand(0, 360);
+    var s = rand(25, 75);
+    var l = rand(25, 75);
+    return 'hsl(' + h + ',' + s + '%,' + l + '%)';
+}
+
+
+// Here's some base frequencies for A4... B4. 
+
+var afreq = 440; // Standard A440 tuning.
+var semitone = Math.pow(2, 1.0 / 12); 
+var bflatfreq = afreq * semitone;
+var bfreq = bflatfreq * semitone;
+
+// Rather than going B4 (493.883 Hz) to C5 (523.251 Hz), we'll
+// double back to C4 (261.626 Hz). So our base frequencies
+// are from C4 to B4
+
+var cfreq = (bfreq * semitone) / 2.0;
+var csharpfreq = cfreq * semitone;
+var dfreq = csharpfreq * semitone;
+var eflatfreq = dfreq * semitone;
+var efreq = eflatfreq * semitone;
+var ffreq = efreq * semitone;
+var fsharpfreq = ffreq * semitone;
+var gfreq = fsharpfreq * semitone;
+var gsharpfreq = gfreq * semitone;
+
+// Looking up notes to their frequencies
+
+var noteLookup = {"A": afreq,
+    "A#": bflatfreq,     
+    "Bb": bflatfreq,    
+    "B": bfreq,
+    "B#": cfreq,
+    "Cb": bfreq,
+    "C": cfreq,
+    "C#": csharpfreq,
+    "Db": csharpfreq,
+    "D": dfreq,
+    "D#": eflatfreq,
+    "Eb": eflatfreq,
+    "E": efreq,
+    "E#": ffreq,
+    "Fb": efreq,
+    "F": ffreq,
+    "F#": fsharpfreq,
+    "Gb": fsharpfreq,    
+    "G": gfreq,
+    "G#": gsharpfreq,
+    "Ab": gsharpfreq,
+    };
+
+// We may get Unicode flats and sharps, so we map them to the
+// hashes and lowercase bs...
+
+function flatandsharpreplace(note)
+{
+    return note.replace("\u266f", "#").replace("\u266d", "b");
+}
+
+function multbysemitone(nosemitones)
+{
+    return Math.pow(semitone, nosemitones); 
+}  
+
+// We have an audio context for everything.
+
+$(document).ready(function(){
+    $(".chordy").click(PlayToooon);
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+})
+
+    function stopall(nodechild, color, gainer, oscillatorarray)
+    {
+        nodechild.css({"background-color": color});
+        gainer.gain = 0.0;
+        var ourlen = oscillatorarray.length;
+        for(var i = 0; i < ourlen; i++) {
+            oscillatorarray[i].stop();
+        }
+    }
+
+
+function PlayToooon()
+{
+
+    var basedone = $(".basedone:first").attr('id').split("-")[0];
+    basedone = flatandsharpreplace(basedone);
+    var basepitch = noteLookup[basedone]
+
+// Variables set from the field.
+
+    var nodechild = $(this).children();
+    var color = nodechild.css( "background-color" );
+    nodechild.css({"background-color":get_random_color()});
+    var notelength = $("#notelength").val();
+    var wavetype = $("#waveform").val().toLowerCase();
+    var pitch = $("#octave").val() - 4;
+    var ourvolume = $("#volume").val() / 100.0;
+
+// The main function. Will read the notes in the id, resolve them to a chord, and
+// then resolve to play them.
+
+    var chordinformation = this.id.split("-");
+    var basenote = chordinformation[0];
+    var chordlength = chordinformation.length - 1;
+    var oscillatorarray = new Array(chordlength);
+    var basenote = flatandsharpreplace(basenote);
+    var chordpitch = noteLookup[basenote];
+    
+// We want tones to increase left to right...    
+
+    var boost = 1.0;
+    if (chordpitch < basepitch)
+    {
+        var boost = 2.0;
+    }
+        
+
+// Now we do the job of linking to the audio context.
+
+    compressor = audioCtx.createDynamicsCompressor();
+    gainer = audioCtx.createGain();
+    gainer.gain.value = 0.0;
+    for(var i = 0; i < chordlength; i++) {
+        oscillator = audioCtx.createOscillator();
+        oscillator.type = wavetype;
+        oscillator.frequency.value = chordpitch  
+            * multbysemitone(Number(chordinformation[i + 1]))
+            * Math.pow(2, pitch)
+            * boost;
+        oscillator.connect(compressor);
+        compressor.connect(gainer);
+        gainer.connect(audioCtx.destination);
+        oscillator.start();
+        oscillatorarray[i] = oscillator;
+    }
+    gainer.gain.value = ourvolume;
+    
+// We time out in the future.    
+    
+    setTimeout(function(){stopall(nodechild, color, gainer, oscillatorarray)},notelength);
+}
+</script>
+<p>Chord Generator is an application that allows you to look up the chords on your favorite musical scale.
+Not only can you read what the chords are, you can <em>hear</em> them - just by clicking on their cells.
+For more information about how it works, see the <a href="#doc">documentation</a> below.</p>
 <form id="fontchoice" action="." method="get" class="inline">    
 <fieldset>
 <legend>Choose a scale to find the chords it contains.</legend>
@@ -27,46 +182,97 @@
 <input type="submit" value="Submit" class="button"/>
 </fieldset>
 </form>
-<h1>Results</h1>
+<h3>Results</h3>
+<p>Here are the chords derived from the scale. Click on any cell to hear it played.</p>
+<fieldset><legend>Audio Controls</legend>
+<div class="row">
+<div class="col-md-7">
+<label for="volume">Volume (%):</label>
+0 <input type="range" name="volume" id="volume" value="20" min="0" max="100" /> 100</div>
+<label for="notelength">Duration (ms):</label>
+<input type="number" name="notelength" id="notelength" value="2000" min="0" max="10000" />
+</div>
+<div class="row">
+<div class="col-md-6">
+<label for ="waveform">Waveform:</label>
+<select id="waveform" name = "waveforms">
+<option value="Sine" selected="selected">Sine</option>
+<option value="Square">Square</option>
+<option value="Sawtooth">Sawtooth</option>
+<option value="Triangle">Triangle</option>
+</select>
+</div>
+<label for ="octave">Octave:</label>
+<select id="octave" name = "octave">
+<option value="-1">C-1 (8.176 Hz) - B-1 (15.434 Hz)</option>
+<option value="0">C0 (16.352 Hz) - B0 (30.868 Hz)</option>
+<option value="1">C1 (32.703 Hz) - B1 (61.735 Hz)</option>
+<option value="2">C2 (65.406 Hz) - B2 (123.47 Hz)</option>
+<option value="3">C3 (130.81 Hz) - B3 (246.94 Hz)</option>
+<option value="4" selected="selected">C4 (261.63 Hz) - B4 (493.88 Hz)</option>
+<option value="5">C5 (523.25 Hz) - B5 (987.77 Hz)</option>
+<option value="6">C6 (1046.5 Hz) - B6 (1975.5 Hz)</option>
+<option value="7">C7 (2093.0 Hz) - B7 (3951.1 Hz)</option>
+<option value="8">C8 (4186.0 Hz) - B8 (7902.1 Hz)</option>
+<option value="9">C9 (8372.0 Hz) - B9 (15804.3 Hz)</option>
+<option value="10">C10 (16744.0 Hz) - B10 (31608.5 Hz)</option>
+</select>
+</div>
+</fieldset>
 {% if asciiselect %}
 {{ scaletable|chordtabletag:1 }}
 {% else %}
 {{ scaletable|chordtabletag:0 }}
 {% endif %}
-    <h1 id="doc">Documentation</h1>
-    <h2>What is Chord Generator?</h2>
+     <h2 id="doc">Documentation</h2>
+    <h3>What is Chord Generator?</h3>
     <p><strong>Chord Generator</strong> is a application for enumerating all
     possible chords in a selected scale. In particular, <strong>Chord Generator</strong>
     will show what the chord is for a given <em>chord type</em> and <em>position</em>, if
-    such a chord exists.</p>
-    <h2>Usage</h2>
-    <p>There are three controls in <strong>Chord Generator</strong>.</p>
+    such a chord exists. This app even allows you to hear the chord by clicking on the cell.</p>
+    <h3>Usage</h3>
+    <p>There are two set of controls for <strong>Chord Generator</strong>. The main set, 
+    &quot;Choose a scale to find the chords it contains&quot;, allows you to select a scale for analysis:</p>
     <ul><li><strong>Key</strong>: This sets the root note for the scale. Select from C, C♯, D♭ and all up to B.</li>
     <li><strong>Scale</strong>: This sets the scale under study. There are plenty to choose from, such as
-    Major, Dorian (a mode of the Major), and Harmonic Minor.</li>
+    Major, Dorian (a mode of the Major), and Harmonic Minor. For a listing of all the scales used in the app,
+    see the <a href="#allthescales">appendix</a></li>
     <li><strong>ASCII friendly</strong>: By default, the app prints out the Unicode character
     "♭" for the flat symbol and "♯" for the sharp symbol. If these are displayed as blocks, it
     probably it means you are using an browser like IE6. Click "ASCII friendly" to see ASCII
     equivalents like "b" and "#".</li></ul>
-    <h2>Results</h2>
+    <h3>Results</h3>
     <p><strong>Chord Generator</strong> generates a table organised as follows:</p>
     <ul><li>The left hand column shows different <em>chord types</em>. <em>Triads</em> are three note chords,
     where the 1st, 3rd and 5th notes are chosen from a scale starting from a position in that scale. 
     <em>Sevenths</em> are when the 1st, 3rd, 5th and 7th notes are chosen from a scale starting from
-    a position in that scale.</li>
+    a position in that scale. For more explanation about how the term <em>chord types</em> are used,
+    see the <a href="#chordtypes">explanation in the appendix</a>.</li>
     <li>The top row indicates the starting position of the chord in the scale. The first position in a C major scale
     is "C", the second position is a "D", and so on. Roman numerals are used to indicate position.</li>
     <li>The intersection of a column and a row show the name of chord for that position and that
     chord type. It also shows the abbreviation and the notes that make it up.</li></ul>
     <p>Let's take the C major scale as an example.</p>
-    <ol><li>The first triad is C, E, G - a major chord, or "maj" for short.</li>
-    <li>The second and third chords are D, F, A and E, G, B - D minor and E minor chords.</li>
-    <li>The fourth and fifth triads are F, A, C and G, B, D - F major and G major chords.</li>
-    <li>The sixth is A, C, E - A minor. The seventh - B, D, F is what I call "Diminished Fifth".
+    <ol><li>The first triad is C, E, G – a major chord, or "maj" for short.</li>
+    <li>The second and third chords are D, F, A and E, G, B – D minor and E minor chords.</li>
+    <li>The fourth and fifth triads are F, A, C and G, B, D – F major and G major chords.</li>
+    <li>The sixth is A, C, E – A minor. The seventh – B, D, F is what I call "Diminished Fifth".
     This should not be confused with "Diminished Seventh", which is a different chord.</li></ol>
-    <p>The default table (shown above) always shows the chords for the C major scale, with ASCII
-    Friendly mode turned off.</p>
-    <h2>Questions</h2>
+    <p>The default shows the chords for the C major scale, with &quot;ASCII Friendly&quot; mode turned off.</p>
+     <h3>Audio</h3>
+    <p><strong>Chord Generator</strong> (as of version 0.7) not only allows you to read the chords 
+    in a given scale, it allows you to hear them as well. Simply click on a cell, and the browser –
+    assuming you are using the right browser – will play the chord contained herein. The parameters for
+    the sound are set in &quot;Audio Controls&quot;, the supplementary control set for this app:</p>
+    <ul><li><strong>Volume</strong>: From 0% (silence) to 100% (full gain).</li>
+    <li><strong>Duration</strong>: Specifies the length of time (in milliseconds) to play the chord.</li>
+    <li><strong>Waveform</strong>: The shape of the tones used for the chords. The default is 
+    &quot;Sine&quot; (extremely mellow, with no supplementary harmonics), but other choice are 
+    &quot;Triangle&quot;, &quot;Sawtooth&quot;, and &quot;Square&quot;.</li>
+    <li><strong>Octave</strong>: Specifies the frequency range for playing the base note of a chord.
+    Choose lower values for bass tones, and higher values for treble frequencies.</li>
+    </ul>   
+   <h3>Questions</h3>
     <p>You may have none, some or many. Some of those questions may be of the form "What the hell is a 
     "Minor Added 6th Added 9th?" For this particular chord, the answer is "It's the chord with the
     1st, 2nd, 3rd, 5th and 6th notes of a major scale." For other chords, I'd advise using a search
@@ -86,17 +292,30 @@
 <p>Once installed, just add "chordgenerator" to your INSTALLED_APPS list in settings.py, and add the
 desired URL in one of the urls.py files.</p> 
 
-<p>Apart from <a href="https://www.djangoproject.com/">Django</a>, the app depends on 
-<a href="https://pypi.python.org/pypi/musictheory/">musictheory</a>. This package - also
-made by myself - is the guts of the application, and can be used outside of Django. It contains classes for musical
-    temperaments, scales and chords.</p> 
-
+<p>There are two <em>Python</em> dependencies. Apart from 
+<a href="https://www.djangoproject.com/">Django</a>, the app depends on 
+<a href="https://pypi.python.org/pypi/musictheory/">musictheory</a>. This package – also
+made by myself – is the guts of the application, and can be used outside of Django. It contains classes for musical
+    temperaments, scales and chords.</p>
+<p>The audio component of <strong>Chord Generator</strong> depends on the JavaScript library
+<a href="http://jquery.com/">jQuery</a>. It also requires the browser to support the experimentatal,
+HTML5ish <a href="http://webaudio.github.io/web-audio-api/">Web Audio API</a>, 
+&quot;a high-level JavaScript API for processing and synthesizing audio in web applications&quot;. Fortunately,
+most desktop browsers as of 2014 support Web Audio API, with Internet Explorer being the usual exception. There are
+no other JavaScript dependencies (thank god) for <strong>Chord Generator</strong> – no mucking around
+with dodgy third-party libraries!</p> 
 <p>The HTML template file used to generate HTML has been
-redesigned to work with the <a href="http://mezzanine.jupo.org/">Mezzanine</a> CMS. The 
+redesigned to work with the <a href="http://mezzanine.jupo.org/">Mezzanine</a> CMS, which comes with
+jQuery built in. The 
 redesign removed any explicit references to particular stylesheets found with earlier versions.
 Feel free to customise: the app is released under a 3 clause BSD license. If you wish to do any changes to the app,
 pop over to the <a href="https://github.com/peterkmurphy/chordgenerator">GitHub repository</a>. (There is
 also a <a href="https://github.com/peterkmurphy/musictheory">Github repository for musictheory</a>.)</p>
+<p><em>For more information about the amazing Web Audio API, see
+<a href="http://modernweb.com/2014/03/31/creating-sound-with-the-web-audio-api-and-oscillators/">Creating 
+Sound with the Web Audio API and Oscillators</a> and 
+<a href="http://www.sitepoint.com/html5-web-audio-api-tutorial-building-virtual-synth-pad/">HTML5
+Web Audio API Tutorial: Building a Virtual Synth Pad</a>.</em></p>
 <h2>History</h2>
 <ul>
 <li>0.1 (May 1st 2011) - Initial release. Took code and made setup script.</li>
@@ -105,9 +324,122 @@ also a <a href="https://github.com/peterkmurphy/musictheory">Github repository f
 <li>0.4 (June 2nd 2013) - Try to make a half-decent PyPI package.</li>
 <li>0.5 (January 30th 2014) - Updated to be compatible with Django 1.6 and Mezzanine 3.0.</li>
 <li>0.6 (February 15th 2014) - Added more styling to be compatible with Bootstrap. More history described.</li>
+<li>0.7 (August 27th 2014) - Added the ability for users to hear the chords.</li>
 </ul>
 <p style="text-align: center;"><em>Copyright © <a href="/">Peter Murphy</a>
 2011, 2012, 2013, 2014.</em></p>
+<h2>Appendix</h2>
+<p>This is a little preliminary explanation about the concepts and &quot;theory&quot; behind the application.</p>
+<h3 id="chordtypes">Chord Types</h3>
+<p>These are the chord types used for selecting notes from a scale for playing and displaying.</p>
+<ul>
+<li><strong>Base note:</strong> the starting position or first note of each scale. Useful for hearing single tones in isolation
+and comparing their sound to their chords.</li>
+<li><strong>Fifth:</strong> the first note and fifth note of a scale. Useful for power chords.</li>
+<li><strong>Triad:</strong> the first, third and fifth notes of a scale. Basically, enough for interesting music.</li>
+<li><strong>Seventh:</strong> the first, third, fifth and seventh notes of a scale. When harmonics get interesting.</li>
+<li><strong>Ninth:</strong> the first, third, fifth, seventh and ninth notes of a scale. When chords get jazzy.</li>
+<li><strong>Eleventh:</strong> the first, third, fifth, seventh, ninth and eleventh notes of a scale. When chords get too jazzy
+for their own good.</li>
+<li><strong>Thirteenth:</strong> the first, third, fifth, seventh, ninth, eleventh and thirteenth notes of a scale. The aeons are closing in.</li>
+<li><strong>Added Ninth:</strong> the first, third, fifth, <em>and</em> ninth notes of a scale. Makes me think of the Foo Fighters for
+soem reason.</li>
+<li><strong>Suspended:</strong> the first, fourth and fifth notes of a scale. Pinball Wizard territory.</li>
+<li><strong>Suspended Seventh:</strong> the first, fourth, fifth and seventh notes of a scale. Built on suspended chords.</li>
+<li><strong>Sixth:</strong> the first, third, fifth, <em>and</em> sixth of a scale. These are often inversions of seventh chords.</li>
+<li><strong>Sixth/Ninth:</strong> the first, third, fifth, sixth and ninth notes of a scale.</li>
+<li><strong>Added Eleventh:</strong> the first, third, fifth, <em>and</em> eleventh notes of a scale. Added for completeness.</li>
+</ul>
+<p>That's probably enough flexibility to select every possible interesting chord. Note that the more 'complicated' chord one is, the more
+melancholy and or discordant the result generally is.</p>
+<h3 id="listscales">Scales</h3>
+<p>There are a whole load of &quot;scales&quot; used in this app, most of which most people would not have heard of. 
+Fortunately, most of the scales are modes and transpositions of other scales. Most of the terminology is grabbed from such places as
+<a href="http://docs.solfege.org/3.22/C/scales/modes.html">Solfege</a> and 
+<a href="http://www.dolmetsch.com/introduction.htm">Dolmetsch</a>. One of the few exceptions is the "Discordant Minor", 
+which I invented for shit and giggles.</p>
+<p><em>For reasons of space, alternative names for scales are shown in brackets underneath. I've also introduced gratuituous hyphens
+to make everything fit.</em></p> 
+
+
+<table id="allthescales" class="chordtable table-bordered table-striped">
+<caption>Scales of interest</caption>
+<thead>
+<tr>
+<th class="text-center"><p>Scales</p></th>
+<th class="text-center"><p>Pattern</p></th>
+<th class="text-center"><p>2nd Mode</p></th>
+<th class="text-center"><p>3rd Mode</p></th>
+<th class="text-center"><p>4th Mode</p></th>
+<th class="text-center"><p>5th Mode</p></th>
+<th class="text-center"><p>6th Mode</p></th>
+<th class="text-center"><p>7th Mode</p></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Major (Ionian)</p></td>
+<td><p>1-2-3-4-5-6-7</p></td>
+<td><p>Dorian</p></td>
+<td><p>Phrygian</p></td>
+<td><p>Lydian</p></td>
+<td><p>Mixo-lydian</p></td>
+<td><p>Aeolian</p></td>
+<td><p>Locrian</p></td>
+</tr>
+<tr>
+<td><p>Melodic Minor (Jazz Minor)</p></td>
+<td><p>1-2-♭3-4-5-6-7</p></td>
+<td><p>Dorian ♭9</p></td>
+<td><p>Lydian Augmented</p></td>
+<td><p>Lydian Dominant</p></td>
+<td><p>Mixo-lydian ♭13</p></td>
+<td><p>Semi-locrian</p></td>
+<td><p>Super-locrian</p></td>
+</tr>
+<tr>
+<td><p>Harmonic Minor</p></td>
+<td><p>1-2-♭3-4-5-♭6-7</p></td>
+<td><p>Locrian ♯6</p></td>
+<td><p>Ionian Augmented</p></td>
+<td><p>Romanian</p></td>
+<td><p>Phrygian Dominant</p></td>
+<td><p>Lydian ♯2</p></td>
+<td><p>Ultra-locrian</p></td>
+</tr>
+<tr>
+<td><p>Harmonic Major</p></td>
+<td><p>1-2-3-4-5-♭6-7</p></td>
+<td><p>Dorian ♭6</p></td>
+<td><p>Phrygian ♭4</p></td>
+<td><p>Lydian ♭3</p></td>
+<td><p>Mixo-lydian ♭9</p></td>
+<td><p>Lydian ♯2 ♯5</p></td>
+<td><p>Locrian ♭♭7</p></td>
+</tr>
+<tr>
+<td><p>Discordant Minor (Melodic Minor ♭5)</p></td>
+<td><p>1-2-♭3-4-♭5-6-7</p></td>
+<td><p>Dorian ♭9 ♭4</p></td>
+<td><p>Minor Lydian Augmented</p></td>
+<td><p>Lydian Dominant ♭9</p></td>
+<td><p>Lydian Augmented ♯2 ♯3</p></td>
+<td><p>Semi-locrian ♭♭7</p></td>
+<td><p>Super-locrian ♭♭6</p></td>
+</tr>
+<tr>
+<td><p>Harmonic Minor ♭5</p></td>
+<td><p>1-2-♭3-4-♭5-♭6-7</p></td>
+<td><p>Super-locrian ♯6</p></td>
+<td><p>Melodic Minor ♯5</p></td>
+<td><p>Dorian ♭9 ♯11</p></td>
+<td><p>Lydian Augmented ♯3</p></td>
+<td><p>Hungarian</p></td>
+<td><p>Super-locrian ♭♭6 ♭♭7</p></td>
+</tr>
+</tbody>
+</table>
+
     
 
 {% endblock %}
