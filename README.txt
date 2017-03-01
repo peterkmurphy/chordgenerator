@@ -21,15 +21,15 @@ Once installed, just add "chordgenerator" to your INSTALLED_APPS list in setting
 and add the desired URL in one of the urls.py files.
 
 Apart from `Django <https://www.djangoproject.com/>`_, the app depends on `musictheory
-<https://pypi.python.org/pypi/musictheory/>`_. This package - also made by myself - 
+<https://pypi.python.org/pypi/musictheory/>`_. This package - also made by myself -
 is the guts of the application, and can be used outside of Django. It contains classes
 for musical temperaments, scales and chords.
 
-The HTML template file used to generate HTML has been redesigned to work with the 
-`Mezzanine <http://mezzanine.jupo.org/>`_ CMS. The redesign removed any explicit 
-references to particular stylesheets found with earlier versions. Feel free to 
-customise: the app is released under a 3 clause BSD license. If you wish to do any 
-changes to the app, pop over to the `GitHub repository <https://github.com/peterkmurphy/chordgenerator>`_. 
+The HTML template file used to generate HTML has been redesigned to work with the
+`Mezzanine <http://mezzanine.jupo.org/>`_ CMS. The redesign removed any explicit
+references to particular stylesheets found with earlier versions. Feel free to
+customise: the app is released under a 3 clause BSD license. If you wish to do any
+changes to the app, pop over to the `GitHub repository <https://github.com/peterkmurphy/chordgenerator>`_.
 (There is also a `Github repository for musictheory <https://github.com/peterkmurphy/musictheory>`_.)
 
 Versions
@@ -47,13 +47,13 @@ Versions
 
 * 0.6 (February 15th 2014) - Added more styling to be compatible with Bootstrap. More history described.
 
+* 0.7 (August 27th 2014) - Added the ability for users to hear the chords.
+
+* 0.8 (March 1st 2017) - Updated to be compatible with Django 1.10.
+
 Copyright
 ---------
 
-The **Chord Generator** app is copyright (c) 2008-2014 
-`Peter Murphy <http://www.pkmurphy.com.au/>`_ 
+The **Chord Generator** app is copyright (c) 2008-2017
+`Peter Murphy <http://www.pkmurphy.com.au/>`_
 <peterkmurphy@gmail.com>.
-
-
-
-

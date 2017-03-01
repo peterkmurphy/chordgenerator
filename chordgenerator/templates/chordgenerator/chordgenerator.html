@@ -17,10 +17,10 @@ function get_random_color() {
 }
 
 
-// Here's some base frequencies for A4... B4. 
+// Here's some base frequencies for A4... B4.
 
 var afreq = 440; // Standard A440 tuning.
-var semitone = Math.pow(2, 1.0 / 12); 
+var semitone = Math.pow(2, 1.0 / 12);
 var bflatfreq = afreq * semitone;
 var bfreq = bflatfreq * semitone;
 
@@ -41,8 +41,8 @@ var gsharpfreq = gfreq * semitone;
 // Looking up notes to their frequencies
 
 var noteLookup = {"A": afreq,
-    "A#": bflatfreq,     
-    "Bb": bflatfreq,    
+    "A#": bflatfreq,
+    "Bb": bflatfreq,
     "B": bfreq,
     "B#": cfreq,
     "Cb": bfreq,
@@ -57,7 +57,7 @@ var noteLookup = {"A": afreq,
     "Fb": efreq,
     "F": ffreq,
     "F#": fsharpfreq,
-    "Gb": fsharpfreq,    
+    "Gb": fsharpfreq,
     "G": gfreq,
     "G#": gsharpfreq,
     "Ab": gsharpfreq,
@@ -73,14 +73,15 @@ function flatandsharpreplace(note)
 
 function multbysemitone(nosemitones)
 {
-    return Math.pow(semitone, nosemitones); 
-}  
+    return Math.pow(semitone, nosemitones);
+}
 
 // We have an audio context for everything.
 
 $(document).ready(function(){
     $(".chordy").click(PlayToooon);
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+//    audioCtx = new AudioContext(); // PKM2017: more browser support.
 })
 
     function stopall(nodechild, color, gainer, oscillatorarray)
@@ -120,15 +121,15 @@ function PlayToooon()
     var oscillatorarray = new Array(chordlength);
     var basenote = flatandsharpreplace(basenote);
     var chordpitch = noteLookup[basenote];
-    
-// We want tones to increase left to right...    
+
+// We want tones to increase left to right...
 
     var boost = 1.0;
     if (chordpitch < basepitch)
     {
         var boost = 2.0;
     }
-        
+
 
 // Now we do the job of linking to the audio context.
 
@@ -138,7 +139,7 @@ function PlayToooon()
     for(var i = 0; i < chordlength; i++) {
         oscillator = audioCtx.createOscillator();
         oscillator.type = wavetype;
-        oscillator.frequency.value = chordpitch  
+        oscillator.frequency.value = chordpitch
             * multbysemitone(Number(chordinformation[i + 1]))
             * Math.pow(2, pitch)
             * boost;
@@ -149,16 +150,16 @@ function PlayToooon()
         oscillatorarray[i] = oscillator;
     }
     gainer.gain.value = ourvolume;
-    
-// We time out in the future.    
-    
+
+// We time out in the future.
+
     setTimeout(function(){stopall(nodechild, color, gainer, oscillatorarray)},notelength);
 }
 </script>
 <p>Chord Generator is an application that allows you to look up the chords on your favorite musical scale.
 Not only can you read what the chords are, you can <em>hear</em> them - just by clicking on their cells.
 For more information about how it works, see the <a href="#doc">documentation</a> below.</p>
-<form id="fontchoice" action="." method="get" class="inline">    
+<form id="fontchoice" action="." method="get" class="inline">
 <fieldset>
 <legend>Choose a scale to find the chords it contains.</legend>
 <label for="key">Key</label>
@@ -177,7 +178,7 @@ For more information about how it works, see the <a href="#doc">documentation</a
 {% endfor %}
 </select>
 <label for="asciif">ASCII friendly</label>
-<input type="checkbox" 
+<input type="checkbox"
  name="asciif" value="asciif" id="asciif" {% if asciiselect %}checked="checked"{% endif %}/>
 <input type="submit" value="Submit" class="button"/>
 </fieldset>
@@ -231,7 +232,7 @@ For more information about how it works, see the <a href="#doc">documentation</a
     will show what the chord is for a given <em>chord type</em> and <em>position</em>, if
     such a chord exists. This app even allows you to hear the chord by clicking on the cell.</p>
     <h3>Usage</h3>
-    <p>There are two set of controls for <strong>Chord Generator</strong>. The main set, 
+    <p>There are two set of controls for <strong>Chord Generator</strong>. The main set,
     &quot;Choose a scale to find the chords it contains&quot;, allows you to select a scale for analysis:</p>
     <ul><li><strong>Key</strong>: This sets the root note for the scale. Select from C, C♯, D♭ and all up to B.</li>
     <li><strong>Scale</strong>: This sets the scale under study. There are plenty to choose from, such as
@@ -244,7 +245,7 @@ For more information about how it works, see the <a href="#doc">documentation</a
     <h3>Results</h3>
     <p><strong>Chord Generator</strong> generates a table organised as follows:</p>
     <ul><li>The left hand column shows different <em>chord types</em>. <em>Triads</em> are three note chords,
-    where the 1st, 3rd and 5th notes are chosen from a scale starting from a position in that scale. 
+    where the 1st, 3rd and 5th notes are chosen from a scale starting from a position in that scale.
     <em>Sevenths</em> are when the 1st, 3rd, 5th and 7th notes are chosen from a scale starting from
     a position in that scale. For more explanation about how the term <em>chord types</em> are used,
     see the <a href="#chordtypes">explanation in the appendix</a>.</li>
@@ -260,20 +261,20 @@ For more information about how it works, see the <a href="#doc">documentation</a
     This should not be confused with "Diminished Seventh", which is a different chord.</li></ol>
     <p>The default shows the chords for the C major scale, with &quot;ASCII Friendly&quot; mode turned off.</p>
      <h3>Audio</h3>
-    <p><strong>Chord Generator</strong> (as of version 0.7) not only allows you to read the chords 
+    <p><strong>Chord Generator</strong> (as of version 0.7) not only allows you to read the chords
     in a given scale, it allows you to hear them as well. Simply click on a cell, and the browser –
     assuming you are using the right browser – will play the chord contained herein. The parameters for
     the sound are set in &quot;Audio Controls&quot;, the supplementary control set for this app:</p>
     <ul><li><strong>Volume</strong>: From 0% (silence) to 100% (full gain).</li>
     <li><strong>Duration</strong>: Specifies the length of time (in milliseconds) to play the chord.</li>
-    <li><strong>Waveform</strong>: The shape of the tones used for the chords. The default is 
-    &quot;Sine&quot; (extremely mellow, with no supplementary harmonics), but other choice are 
+    <li><strong>Waveform</strong>: The shape of the tones used for the chords. The default is
+    &quot;Sine&quot; (extremely mellow, with no supplementary harmonics), but other choice are
     &quot;Triangle&quot;, &quot;Sawtooth&quot;, and &quot;Square&quot;.</li>
     <li><strong>Octave</strong>: Specifies the frequency range for playing the base note of a chord.
     Choose lower values for bass tones, and higher values for treble frequencies.</li>
-    </ul>   
+    </ul>
    <h3>Questions</h3>
-    <p>You may have none, some or many. Some of those questions may be of the form "What the hell is a 
+    <p>You may have none, some or many. Some of those questions may be of the form "What the hell is a
     "Minor Added 6th Added 9th?" For this particular chord, the answer is "It's the chord with the
     1st, 2nd, 3rd, 5th and 6th notes of a major scale." For other chords, I'd advise using a search
     engine. I made this application because I wanted to; any educational usage is just a bonus.</p>
@@ -281,7 +282,7 @@ For more information about how it works, see the <a href="#doc">documentation</a
     need to provide a key. It would be nice to add functionality that shows how the chord may
     appear on a fretboard, whether it be a guitar, a violin, or a 4/5/6 string bass. But perhaps I will
     never have time to do anything about it.</p>
-    
+
     <h2>Installation and Dependencies</h2>
 
 
@@ -290,30 +291,30 @@ For more information about how it works, see the <a href="#doc">documentation</a
 <pre>pip install chordgenerator</pre>
 
 <p>Once installed, just add "chordgenerator" to your INSTALLED_APPS list in settings.py, and add the
-desired URL in one of the urls.py files.</p> 
+desired URL in one of the urls.py files.</p>
 
-<p>There are two <em>Python</em> dependencies. Apart from 
-<a href="https://www.djangoproject.com/">Django</a>, the app depends on 
+<p>There are two <em>Python</em> dependencies. Apart from
+<a href="https://www.djangoproject.com/">Django</a>, the app depends on
 <a href="https://pypi.python.org/pypi/musictheory/">musictheory</a>. This package – also
 made by myself – is the guts of the application, and can be used outside of Django. It contains classes for musical
     temperaments, scales and chords.</p>
 <p>The audio component of <strong>Chord Generator</strong> depends on the JavaScript library
 <a href="http://jquery.com/">jQuery</a>. It also requires the browser to support the experimentatal,
-HTML5ish <a href="http://webaudio.github.io/web-audio-api/">Web Audio API</a>, 
+HTML5ish <a href="https://webaudio.github.io/web-audio-api/">Web Audio API</a>,
 &quot;a high-level JavaScript API for processing and synthesizing audio in web applications&quot;. Fortunately,
 most desktop browsers as of 2014 support Web Audio API, with Internet Explorer being the usual exception. There are
 no other JavaScript dependencies (thank god) for <strong>Chord Generator</strong> – no mucking around
-with dodgy third-party libraries!</p> 
+with dodgy third-party libraries!</p>
 <p>The HTML template file used to generate HTML has been
 redesigned to work with the <a href="http://mezzanine.jupo.org/">Mezzanine</a> CMS, which comes with
-jQuery built in. The 
+jQuery built in. The
 redesign removed any explicit references to particular stylesheets found with earlier versions.
 Feel free to customise: the app is released under a 3 clause BSD license. If you wish to do any changes to the app,
 pop over to the <a href="https://github.com/peterkmurphy/chordgenerator">GitHub repository</a>. (There is
 also a <a href="https://github.com/peterkmurphy/musictheory">Github repository for musictheory</a>.)</p>
 <p><em>For more information about the amazing Web Audio API, see
-<a href="http://modernweb.com/2014/03/31/creating-sound-with-the-web-audio-api-and-oscillators/">Creating 
-Sound with the Web Audio API and Oscillators</a> and 
+<a href="http://modernweb.com/2014/03/31/creating-sound-with-the-web-audio-api-and-oscillators/">Creating
+Sound with the Web Audio API and Oscillators</a> and
 <a href="http://www.sitepoint.com/html5-web-audio-api-tutorial-building-virtual-synth-pad/">HTML5
 Web Audio API Tutorial: Building a Virtual Synth Pad</a>.</em></p>
 <h2>History</h2>
@@ -325,9 +326,10 @@ Web Audio API Tutorial: Building a Virtual Synth Pad</a>.</em></p>
 <li>0.5 (January 30th 2014) - Updated to be compatible with Django 1.6 and Mezzanine 3.0.</li>
 <li>0.6 (February 15th 2014) - Added more styling to be compatible with Bootstrap. More history described.</li>
 <li>0.7 (August 27th 2014) - Added the ability for users to hear the chords.</li>
+<li>0.8 (March 1st 2017) - Updated to be compatible with Django 1.10.</li>
 </ul>
 <p style="text-align: center;"><em>Copyright © <a href="/">Peter Murphy</a>
-2011, 2012, 2013, 2014.</em></p>
+2011–{% now "Y" %}.</em></p>
 <h2>Appendix</h2>
 <p>This is a little preliminary explanation about the concepts and &quot;theory&quot; behind the application.</p>
 <h3 id="chordtypes">Chord Types</h3>
@@ -353,13 +355,13 @@ soem reason.</li>
 <p>That's probably enough flexibility to select every possible interesting chord. Note that the more 'complicated' chord one is, the more
 melancholy and or discordant the result generally is.</p>
 <h3 id="listscales">Scales</h3>
-<p>There are a whole load of &quot;scales&quot; used in this app, most of which most people would not have heard of. 
+<p>There are a whole load of &quot;scales&quot; used in this app, most of which most people would not have heard of.
 Fortunately, most of the scales are modes and transpositions of other scales. Most of the terminology is grabbed from such places as
-<a href="http://docs.solfege.org/3.22/C/scales/modes.html">Solfege</a> and 
-<a href="http://www.dolmetsch.com/introduction.htm">Dolmetsch</a>. One of the few exceptions is the "Discordant Minor", 
+<a href="http://docs.solfege.org/3.22/C/scales/modes.html">Solfege</a> and
+<a href="http://www.dolmetsch.com/introduction.htm">Dolmetsch</a>. One of the few exceptions is the "Discordant Minor",
 which I invented for shit and giggles.</p>
 <p><em>For reasons of space, alternative names for scales are shown in brackets underneath. I've also introduced gratuituous hyphens
-to make everything fit.</em></p> 
+to make everything fit.</em></p>
 
 
 <table id="allthescales" class="chordtable table-bordered table-striped">
@@ -440,6 +442,6 @@ to make everything fit.</em></p>
 </tbody>
 </table>
 
-    
+
 
 {% endblock %}

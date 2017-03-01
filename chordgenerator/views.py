@@ -1,9 +1,6 @@
-#!/usr/bin/python 
+#!/usr/bin/python
 #-*- coding: UTF-8 -*-
-from django.template import Context, RequestContext, loader
-from django.http import HttpResponse, Http404, HttpResponseRedirect;
-from django.template.response import TemplateResponse;
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render
 from django.utils.html import strip_tags
 from musictheory.temperament import WestTemp, temperament, seq_dict,\
     NSEQ_SCALE, NSEQ_CHORD, M_SHARP, M_FLAT, un_unicode_accdtls;
@@ -24,12 +21,12 @@ UNIKEYS = [u"C♭", "C", u"C♯", u"D♭", "D", u"E♭", "E", "F", u"F♯", u"G�
 # equivalents, it seems easier to keep a map. This allows us to look
 # for invalid "keys" provided by a malicious user.
 
-MAPKEYS = {"Cb":u"C♭", "C#":u"C♯", "Db":u"D♭", "Eb":u"E♭","F#":u"F♯", 
+MAPKEYS = {"Cb":u"C♭", "C#":u"C♯", "Db":u"D♭", "Eb":u"E♭","F#":u"F♯",
     "Gb":u"G♭", "Ab":u"A♭", "Bb":u"B♭", u"C♭":"Cb", u"C♯":"C#", u"D♭":"Db",
     u"E♭":"Eb", u"F♯":"F#", u"G♭":"Gb", u"A♭":"Ab", u"B♭":"Bb"};
 
-MAPSCALES = {"Dorian b9":u"Dorian ♭9", "Locrian #6":u"Locrian ♯6", 
-    "Dorian b6":u"Dorian ♭6", "Lydian #2 #5":u"Lydian ♯2 ♯5", 
+MAPSCALES = {"Dorian b9":u"Dorian ♭9", "Locrian #6":u"Locrian ♯6",
+    "Dorian b6":u"Dorian ♭6", "Lydian #2 #5":u"Lydian ♯2 ♯5",
     "Mixolydian b9":u"Mixolydian ♭9", "Phrygian b4":u"Phrygian ♭4",
     "Lydian #2":u"Lydian ♯2", "Mixolydian b13":u"Mixolydian ♭13",
     "Locrian bb7":u"Locrian ♭♭7", u"Lydian b3":u"Lydian ♭3"};
@@ -69,9 +66,7 @@ def index(request):
         chosenscale = un_unicode_accdtls(chosenscale);
     else:
         scales = sorted(SCALE_ARRAY);
-    c = RequestContext(request, {"keys": keys, "chosenkey": key, "asciiselect":asciiselect,
-        "scaletable":scaletable, "scales":scales, 
-        "chosenscale":chosenscale})
-    return TemplateResponse(request, 'chordgenerator/chordgenerator.html', context=c)
-
-
+    c = {"keys": keys, "chosenkey": key, "asciiselect":asciiselect,
+            "scaletable":scaletable, "scales":scales,
+            "chosenscale":chosenscale}
+    return render(request, 'chordgenerator/chordgenerator.html', c)
