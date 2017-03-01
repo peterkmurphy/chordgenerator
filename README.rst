@@ -54,6 +54,6 @@ Versions
 Copyright
 ---------
 
-The **Chord Generator** app is copyright (c) 2008-2014
+The **Chord Generator** app is copyright (c) 2008-2017
 `Peter Murphy <http://www.pkmurphy.com.au/>`_
 <peterkmurphy@gmail.com>.
