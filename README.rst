@@ -51,9 +51,11 @@ Versions
 
 * 0.8 (March 1st 2017) - Updated to be compatible with Django 1.10.
 
+* 0.9 (December 5th 2020) - Updated for Python 3 compatibility.
+
 Copyright
 ---------
 
-The **Chord Generator** app is copyright (c) 2008-2017
+The **Chord Generator** app is copyright (c) 2008-2020
 `Peter Murphy <http://www.pkmurphy.com.au/>`_
 <peterkmurphy@gmail.com>.

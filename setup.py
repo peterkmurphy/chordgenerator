@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='chordgenerator',
-    version='0.8',
+    version='0.9',
     description='A Django app for enumerating chords in a scale.',
     author='Peter Murphy',
     author_email='peterkmurphy@gmail.com',

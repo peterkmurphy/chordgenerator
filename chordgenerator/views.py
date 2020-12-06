@@ -14,25 +14,25 @@ from musictheory.chordgenerator import populate_scale_chords, \
 
 ASCIIKEYS = ["Cb", "C", "C#", "Db", "D", "Eb", "E", "F", "F#", "Gb", "G",
     "Ab", "A", "Bb", "B"];
-UNIKEYS = [u"C♭", "C", u"C♯", u"D♭", "D", u"E♭", "E", "F", u"F♯", u"G♭", "G",
-    u"A♭", "A", u"B♭", "B"];
+UNIKEYS = ["C♭", "C", "C♯", "D♭", "D", "E♭", "E", "F", "F♯", "G♭", "G",
+    "A♭", "A", "B♭", "B"];
 
 # Rather than using a function to swap between ASCII and Unicode
 # equivalents, it seems easier to keep a map. This allows us to look
 # for invalid "keys" provided by a malicious user.
 
-MAPKEYS = {"Cb":u"C♭", "C#":u"C♯", "Db":u"D♭", "Eb":u"E♭","F#":u"F♯",
-    "Gb":u"G♭", "Ab":u"A♭", "Bb":u"B♭", u"C♭":"Cb", u"C♯":"C#", u"D♭":"Db",
-    u"E♭":"Eb", u"F♯":"F#", u"G♭":"Gb", u"A♭":"Ab", u"B♭":"Bb"};
+MAPKEYS = {"Cb":"C♭", "C#":"C♯", "Db":"D♭", "Eb":"E♭","F#":"F♯",
+    "Gb":"G♭", "Ab":"A♭", "Bb":"B♭", "C♭":"Cb", "C♯":"C#", "D♭":"Db",
+    "E♭":"Eb", "F♯":"F#", "G♭":"Gb", "A♭":"Ab", "B♭":"Bb"};
 
-MAPSCALES = {"Dorian b9":u"Dorian ♭9", "Locrian #6":u"Locrian ♯6",
-    "Dorian b6":u"Dorian ♭6", "Lydian #2 #5":u"Lydian ♯2 ♯5",
-    "Mixolydian b9":u"Mixolydian ♭9", "Phrygian b4":u"Phrygian ♭4",
-    "Lydian #2":u"Lydian ♯2", "Mixolydian b13":u"Mixolydian ♭13",
-    "Locrian bb7":u"Locrian ♭♭7", u"Lydian b3":u"Lydian ♭3"};
+MAPSCALES = {"Dorian b9":"Dorian ♭9", "Locrian #6":"Locrian ♯6",
+    "Dorian b6":"Dorian ♭6", "Lydian #2 #5":"Lydian ♯2 ♯5",
+    "Mixolydian b9":"Mixolydian ♭9", "Phrygian b4":"Phrygian ♭4",
+    "Lydian #2":"Lydian ♯2", "Mixolydian b13":"Mixolydian ♭13",
+    "Locrian bb7":"Locrian ♭♭7", "Lydian b3":"Lydian ♭3"};
 
-SCALE_ARRAY = WestTemp.seq_maps.nseqtype_maps[NSEQ_SCALE].\
-    name_dict.keys()
+SCALE_ARRAY = list(WestTemp.seq_maps.nseqtype_maps[NSEQ_SCALE].\
+    name_dict.keys())
 
 def index(request):
     """ Contains explanatory text. Nothing needs to be loaded. """
@@ -45,7 +45,7 @@ def index(request):
     if "key" in request.GET:
         key = request.GET["key"]
         if key not in keys:
-            if key in MAPKEYS.keys():
+            if key in list(MAPKEYS.keys()):
                 key = MAPKEYS[key];
             else: # Someone's been playing silly buggers with the GET request.
                 key = "C"; # So we return C as simple.
@@ -54,7 +54,7 @@ def index(request):
     if "scales" in request.GET:
         chosenscale = request.GET["scales"]
         if chosenscale not in SCALE_ARRAY:
-            if chosenscale in MAPSCALES.keys():
+            if chosenscale in list(MAPSCALES.keys()):
                 chosenscale = MAPSCALES[chosenscale];
             else: # Again, enemy action from the GET request.
                 chosenscale = "Major";

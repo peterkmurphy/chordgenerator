@@ -54,7 +54,7 @@ def chordgentableneu(scales):
         represented by a scale_chords instance. """
     startrow  = "<tr>\n";
     endrow = "</tr>\n";
-    thestring = u"";
+    thestring = "";
     for scale in scales:
         thestring += "<h2>%s</h2>\n" % (scale.key + " " +scale.full_name);
         thestring += ("<table id=\"%s\" class=\"chordtable table-bordered table-striped\">\n" % 
@@ -96,11 +96,11 @@ def chordgentableneu(scales):
                 ourseqnoteadj = get_keyseq_notes_adjusted(WestTemp, j.notes);
                 ourseqid = getkeyseqid(ourseqnoteadj);
                 if not j.chordname_1:
-                    thestring += ("<td class=\"chordy\" id = \"%s\" ><p>%s<br />" % (ourseqid, unicode(j.chordname_1)));
-                    thestring += ("<i>%s</i><br />" % (unicode(j.chordname_2)));
+                    thestring += ("<td class=\"chordy\" id = \"%s\" ><p>%s<br />" % (ourseqid, str(j.chordname_1)));
+                    thestring += ("<i>%s</i><br />" % (str(j.chordname_2)));
                 else:
-                    thestring += ("<td class=\"chordy\" id = \"%s\"><p>%s<br />" % (ourseqid, j.notes[0]+" "+unicode(j.chordname_1)));
-                    thestring += ("<i>%s</i><br />" % (j.notes[0]+unicode(j.chordname_2)));
+                    thestring += ("<td class=\"chordy\" id = \"%s\"><p>%s<br />" % (ourseqid, j.notes[0]+" "+str(j.chordname_1)));
+                    thestring += ("<i>%s</i><br />" % (j.notes[0]+str(j.chordname_2)));
                     
                 thestring += ("<b>%s</b></p></td>" % seqtostr(j.notes));                
             thestring += endrow;    
